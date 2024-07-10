@@ -49,7 +49,7 @@ def has_opened_pull_request(pulls: List[PullRequest]) -> bool:
 
 def has_pulls_release_candidates(pulls: List[PullRequest]) -> bool:
     for pull in pulls:
-        if "release-candidate" in pull.head.ref:
+        if "release-candidate" in pull.head.ref or "rc-" in pull.head.ref:
             return True
     return False
 
@@ -60,3 +60,12 @@ def compare_status(repo: Repository) -> bool:
         return compare.status == "identical"
     except:
         return False
+
+
+def master_branch_creation(repo: Repository) -> None:
+    try:
+        # check if not master branch exists
+        if not repo.get_branch("master"):
+            repo.create_git_ref("refs/heads/master", repo.get_branch("release").commit.sha)
+    except:
+        pass
